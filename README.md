@@ -21,3 +21,12 @@ Due to the end of a fragment shader also being the end of a file, there is no ne
 
 ## Platforms
 Should be cross-compatible with Linux and Windows, but only tested on Arch Linux
+
+## Todo
+- [ ] get it working
+- [ ] rewrite detection algorithm
+- [ ] hlsl support
+- [ ] include vertex shader
+- [ ] include fragment shader
+- [ ] append file to shader
+- [ ] compute support
