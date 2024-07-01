@@ -17,4 +17,4 @@ Anything before `#vert` gets included in both shaders<br/><br/>
 Due to the end of a fragment shader also being the end of a file, there is no need to put a `~` at the end of the fragment shader.
 
 ## Example
-`example_shader/example.glsl`
+`example.vksm` is a basic example of a VKSM shader
