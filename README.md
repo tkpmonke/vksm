@@ -18,3 +18,6 @@ Due to the end of a fragment shader also being the end of a file, there is no ne
 
 ## Example
 `example.vksm` is a basic example of a VKSM shader
+
+## Platforms
+Should be cross-compatible with Linux and Windows, but only tested on Arch Linux
