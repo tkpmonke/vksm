@@ -1,4 +1,5 @@
 #include "vksm.h"
+#include "shaderc/shaderc.hpp"
 
 bool verbose;
 
@@ -47,7 +48,7 @@ void vksmInterpretShaderFile(const char* location)
 
 void vksmCompile(std::string vert, std::string frag, std::string name)
 {
-   std::filesystem::create_directory("./temp");
+   /*std::filesystem::create_directory("./temp");
    
    std::ofstream vf("./temp/vert.vert");
    vf << vert;
@@ -67,6 +68,41 @@ void vksmCompile(std::string vert, std::string frag, std::string name)
    {
       std::cout << "\n" << (std::string("glslc ./temp/vert.vert -o ") + name + std::string(".vert.spv")).data() << "\n";
       std::cout << "\n" << std::string("glslc ./temp/frag.frag -o ") + name + std::string(".frag.spv") << "\n";
+   }*/
+   shaderc::Compiler compiler;
+   shaderc::CompileOptions options;
+
+   options.AddMacroDefinition("MADE_WITH_VULKAN_SHADER_MIXER_AND_LOVE", ":heart:");
+   shaderc::PreprocessedSourceCompilationResult result = compiler.PreprocessGlsl(vert, shaderc_glsl_vertex_shader, name.data(), options);
+   shaderc::PreprocessedSourceCompilationResult resultf = compiler.PreprocessGlsl(frag, shaderc_glsl_fragment_shader, name.data(), options);
+
+   if (result.GetCompilationStatus() != shaderc_compilation_status_success)
+      std::cerr << result.GetErrorMessage();
+ 
+   if (resultf.GetCompilationStatus() != shaderc_compilation_status_success)
+      std::cerr << resultf.GetErrorMessage();
+   options.SetOptimizationLevel(shaderc_optimization_level_size);
+
+   shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(vert, shaderc_glsl_vertex_shader, name.data(), options);
+   shaderc::SpvCompilationResult modulef = compiler.CompileGlslToSpv(frag, shaderc_glsl_fragment_shader, name.data(), options);
+  
+   if (module.GetCompilationStatus() != shaderc_compilation_status_success)
+      std::cerr << module.GetErrorMessage();
+   if (modulef.GetCompilationStatus() != shaderc_compilation_status_success)
+      std::cerr << modulef.GetErrorMessage();
+   
+   std::vector<uint32_t> m = {module.cbegin(), module.cend()}; 
+   std::ofstream o(name+std::string("_vert.spv"));
+   for (int i = 0; i < m.size(); ++i)
+   {
+      o << static_cast<unsigned char>(m[i] & 0x000000FF);
+   }
+
+   m = {modulef.cbegin(), modulef.cend()};
+   o = std::ofstream(name+std::string("_frag.spv"));
+   for (int i = 0; i < m.size(); ++i)
+   {
+      o << static_cast<unsigned char>(m[i] & 0x000000FF);
    }
 }
 
